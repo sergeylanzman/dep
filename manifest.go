@@ -30,6 +30,10 @@ var (
 	errInvalidIgnored     = errors.New("\"ignored\" must be a TOML list of strings")
 	errInvalidProjectRoot = errors.New("ProjectRoot name validation failed")
 )
+var (
+	// match abbreviated git hash (7chars) or hg hash (12chars)
+	abbrevRevHash = regexp.MustCompile("^[a-f0-9]{7}([a-f0-9]{5})?$")
+)
 
 // Manifest holds manifest file data and implements gps.RootManifest.
 type Manifest struct {
@@ -72,8 +76,7 @@ func validateManifest(s string) ([]error, error) {
 	// Convert tree to a map
 	manifest := tree.ToMap()
 
-	// match abbreviated git hash (7chars) or hg hash (12chars)
-	abbrevRevHash := regexp.MustCompile("^[a-f0-9]{7}([a-f0-9]{5})?$")
+
 	// Look for unknown fields and collect errors
 	for prop, val := range manifest {
 		switch prop {
